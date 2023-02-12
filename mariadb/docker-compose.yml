@@ -1,0 +1,28 @@
+version: "3.9"
+services:
+  mariadb:
+    container_name: mariadb
+    image: mariadb:10.9.5
+    environment:
+      MYSQL_ROOT_PASSWORD: "toor"
+    volumes:
+      - mariadb_data:/var/lib/mysql
+      - mariadb_config:/etc/mysql/conf.d
+    restart: unless-stopped
+    networks:
+      - internal-net
+volumes:
+  mariadb_data:
+    driver_opts:
+      type: none
+      o: bind
+      device: /Users/admin/docker_volumes/mariadb_data
+  mariadb_config:
+    driver_opts:
+      type: none
+      o: bind
+      device: /Users/admin/docker_volumes/mariadb_config
+networks:
+  internal-net:
+    name: internal-net
+    external: true
