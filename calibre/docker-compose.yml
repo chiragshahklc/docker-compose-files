@@ -1,0 +1,31 @@
+---
+version: "3.9"
+services:
+  calibre:
+    image: linuxserver/calibre:6.13.0
+    container_name: calibre
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.calibre.rule=Host(`calibre.localhost`)
+      - traefik.http.services.calibre.loadbalancer.server.port=8080
+    security_opt:
+      - seccomp:unconfined #optional
+    environment:
+      - PUID=501
+      - PGID=20
+      - TZ=Asia/Kolkata
+      - PASSWORD= #optional
+      - CLI_ARGS= #optional
+    volumes:
+      - /Users/chiragshah/Arcane/Calibre:/config
+      - /Users/chiragshah/Downloads:/Downloads
+    ports:
+      - 58080:8080
+      - 58081:8081
+    networks:
+      - integrella-net
+    restart: unless-stopped
+networks:
+  integrella-net:
+    name: integrella-net
+    external: true

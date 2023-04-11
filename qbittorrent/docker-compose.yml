@@ -1,0 +1,35 @@
+---
+version: "2.1"
+services:
+  qbittorrent:
+    image: linuxserver/qbittorrent:4.5.0
+    container_name: qbittorrent
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.qbittorrent.rule=Host(`qbittorrent.localhost`)
+      - traefik.http.services.qbittorrent.loadbalancer.server.port=8080
+    environment:
+      - PUID=501
+      - PGID=20
+      - TZ=Asia/Kolkata
+      - WEBUI_PORT=8080
+    volumes:
+      # - /path/to/appdata/config:/config
+      - qbittorrent_data:/downloads
+    networks:
+      - integrella-net
+    ports:
+      # - 8081:8080
+      - 6881:6881
+      - 6881:6881/udp
+    restart: unless-stopped
+volumes:
+  qbittorrent_data:
+    driver_opts:
+      type: none
+      o: bind
+      device: /Users/chiragshah/Arcane/docker_volumes/qbittorrent_data
+networks:
+  integrella-net:
+    name: integrella-net
+    external: true

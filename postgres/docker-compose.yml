@@ -10,15 +10,23 @@ services:
     # ports:
     #   - 5432:5432
     networks:
-      - internal-net
+      - integrella-net
     restart: unless-stopped
+    healthcheck:
+      test:
+        - CMD
+        - pg_isready
+        - "-U"
+        - postgres
+      interval: 10s
+      timeout: 3s
 volumes:
   postgres_data:
     driver_opts:
       type: none
       o: bind
-      device: /Users/admin/docker_volumes/postgres_data
+      device: /Users/chiragshah/Arcane/docker_volumes/postgres_data
 networks:
-  internal-net:
-    name: internal-net
+  integrella-net:
+    name: integrella-net
     external: true
