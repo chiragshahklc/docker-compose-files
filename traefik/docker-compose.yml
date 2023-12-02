@@ -1,29 +1,50 @@
 version: "3.9"
 services:
   traefik:
-    image: traefik:v2.9.6
+    image: traefik:v2.10.4
     container_name: traefik
     labels:
       - traefik.enable=true
-      - traefik.http.routers.traefik.rule=Host(`traefik.localhost`)
-      - traefik.http.services.traefik.loadbalancer.server.port=8080
+      # 'force-https' middleware define
+      - traefik.http.middlewares.force-https.redirectscheme.scheme=https
+      - traefik.http.middlewares.force-https.redirectscheme.permanent=true
+      # web
+      - traefik.http.routers.traefik-http.rule=Host(`arm.furysphere.com`)
+      - traefik.http.routers.traefik-http.entrypoints=web
+      - traefik.http.routers.traefik-http.middlewares=force-https
+      # websecure
+      - traefik.http.routers.traefik-https.rule=Host(`arm.furysphere.com`)
+      - traefik.http.routers.traefik-https.entrypoints=websecure
+      - traefik.http.services.traefik-https.loadbalancer.server.port=8080
+      - traefik.http.routers.traefik-https.tls=true
+      - traefik.http.routers.traefik-https.tls.certresolver=leprod
+    command:
+      - "--global.checknewversion=true"
+      - "--global.sendanonymoususage=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--entrypoints.postgres.address=:5432"
+      - "--api.insecure=true"
+      - "--providers.docker.endpoint=unix:///var/run/docker.sock"
+      # - "--providers.file.directory=/etc/traefik/providers"
+      # - "--providers.file.watch=true"
+      - "--certificatesresolvers.leprod.acme.email=chiragshahklc@gmail.com"
+      - "--certificatesresolvers.leprod.acme.storage=/etc/traefik/acme/acme.json"
+      - "--certificatesresolvers.leprod.acme.httpChallenge=true"
+      - "--certificatesresolvers.leprod.acme.httpChallenge.entryPoint=web"
+      # - "--certificatesresolvers.leprod.acme.dnsChallenge=true"
+      # - "--certificatesresolvers.leprod.acme.dnsChallenge.provider=gcloud"
     ports:
       - 80:80
       - 443:443
-      # - "8080:8080"
+      - 5432:5432
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - traefik_config:/etc/traefik/
+      - /home/furydragon/traefik_acme:/etc/traefik/acme
     networks:
-      - integrella-net
+      - internal-net
     restart: unless-stopped
-volumes:
-  traefik_config:
-    driver_opts:
-      type: none
-      o: bind
-      device: /Users/chiragshah/Arcane/docker_volumes/traefik/
 networks:
-  integrella-net:
-    name: integrella-net
+  internal-net:
+    name: internal-net
     external: true
