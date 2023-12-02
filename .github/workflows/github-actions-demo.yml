@@ -19,4 +19,4 @@ jobs:
   Test-Traefik-Deployment:
     runs-on: contabo
     steps:
-      run: docker compose -f ./traefik/compose.yml
+      - run: docker compose -f ./traefik/compose.yml
