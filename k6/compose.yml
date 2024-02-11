@@ -1,0 +1,17 @@
+version: "3.8"
+services:
+  k6:
+    image: grafana/k6:0.49.0
+    container_name: k6
+    user: "${UID}:${GID}"
+    volumes:
+      - $PWD:/app
+    working_dir: /app
+    networks:
+      - internal-net
+    # command: new load_test_script.js
+    command: run load_test_script.js
+networks:
+  internal-net:
+    name: local-net
+    external: true
