@@ -9,7 +9,14 @@ services:
     volumes:
       - $PWD/config:/etc/prometheus
       - prometheus_data:/prometheus
+    networks:
+        - local
+    restart: unless-stopped
 volumes:
   prometheus_data:
     name: prometheus_data
+    external: true
+networks:
+  local:
+    name: local-net
     external: true
