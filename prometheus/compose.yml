@@ -1,0 +1,15 @@
+version: '3.8'
+services:
+  prometheus:
+    image: prom/prometheus:v2.49.1
+    container_name: prometheus
+    # user: "${UID}:${GID}"
+    ports:
+      - 9090:9090
+    volumes:
+      - $PWD/config:/etc/prometheus
+      - prometheus_data:/prometheus
+volumes:
+  prometheus_data:
+    name: prometheus_data
+    external: true
